@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Book Catalog</title>
+  <link rel="stylesheet" href="styles/main.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container site-header__row" role="banner">
+      <a class="brand" href="#" aria-label="Home">📚 Bookstore</a>
+
+      <form class="search" role="search" aria-label="Catalog search">
+        <label class="visually-hidden" for="q">Search</label>
+        <input id="q" class="search__input" type="search" placeholder="Search by title or author…" />
+      </form>
+
+      <div class="favorites" aria-live="polite">Favorites: <span id="favCount">0</span></div>
+    </div>
+
+    <nav class="toolbar container" aria-label="Filters and sorting">
+      <div class="filters" role="tablist" aria-label="Genre">
+        <button class="chip is-active" role="tab" data-genre="all" aria-selected="true">All</button>
+        <button class="chip" role="tab" data-genre="fantasy">Fantasy</button>
+        <button class="chip" role="tab" data-genre="nonfiction">Nonfiction</button>
+        <button class="chip" role="tab" data-genre="classic">Classics</button>
+      </div>
+      <div class="sort">
+        <label for="sortPrice">Sort by:</label>
+        <select id="sortPrice" class="select">
+          <option value="none">No sorting</option>
+          <option value="asc">Price ↑</option>
+          <option value="desc">Price ↓</option>
+        </select>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <section class="catalog" aria-label="Book catalog" id="catalog" tabindex="-1"></section>
+    <div class="empty-state" id="emptyState" hidden role="status" aria-live="polite">
+      Nothing found. Change search or filters.
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><small>&copy; 2025 Bookstore. All rights reserved.</small></div>
+  </footer>
+
+  <script src="scripts/app.js" defer></script>
+</body>
+</html>
