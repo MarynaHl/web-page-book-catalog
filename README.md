@@ -22,13 +22,6 @@ Works fully **offline** and does **not** require external libraries or image ass
 - JS events affect functionality (filtering, sorting, favorites).
 - Responsive layout, basic a11y, no external dependencies.
 
-## Project Structure
-├─ index.html
-├─ styles/
-│ └─ main.css
-├─ scripts/
-│ └─ app.js
-└─ assets/ (optional, not required)
 
 ## How to Run
 Just open `index.html` in a browser. No build step or server required.
