@@ -1,8 +1,4 @@
-# 📚 Book Catalog — RESTful Web Application
-**Author:** Hlushak Maryna  
-**Repository:** WEB-PAGE-BOOK-CATALOG
 
----
 
 ## 🧩 Project Overview
 This project demonstrates how to design and implement a simple **RESTful API** and a connected **frontend** web page.
