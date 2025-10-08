@@ -1,4 +1,4 @@
-// дані
+// Data
 const BOOKS = [
     { id: 1, title: "Тіні забутих предків", author: "М. Коцюбинський", genre: "classic", price: 220 },
     { id: 2, title: "Ловець пригод", author: "А. Блейк", genre: "fantasy", price: 310 },
@@ -8,13 +8,16 @@ const BOOKS = [
     { id: 6, title: "Чому нації занепадають", author: "Аджемоглу/Робінсон", genre: "nonfiction", price: 500 },
   ];
   
+  // App state
+  const LS_KEY = "bookCatalog:favorites";
   const state = {
     query: "",
     genre: "all",
     sort: "none",
-    favorites: new Set(JSON.parse(localStorage.getItem("favorites") || "[]")),
+    favorites: new Set(JSON.parse(localStorage.getItem(LS_KEY) || "[]")),
   };
   
+  // Elements
   const els = {
     catalog: document.getElementById("catalog"),
     empty: document.getElementById("emptyState"),
@@ -24,11 +27,11 @@ const BOOKS = [
     chips: Array.from(document.querySelectorAll(".chip")),
   };
   
-
+  // SVG placeholder cover
   function svgCover(title, author) {
-    const palette = ["#1f4b99","#0a6e6e","#7a3c9a","#9a342e","#2e7d32","#6b4f1d"];
+    const palette = ["#1f4b99", "#0a6e6e", "#7a3c9a", "#9a342e", "#2e7d32", "#6b4f1d"];
     const bg = palette[(title.length + author.length) % palette.length];
-    const initials = title.split(/\s+/).map(w => w[0]).slice(0,3).join("").toUpperCase();
+    const initials = title.split(/\s+/).map(w => w[0]).slice(0, 3).join("").toUpperCase();
     const svg =
   `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='600'>
     <defs>
@@ -44,67 +47,92 @@ const BOOKS = [
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
   
-  function saveFavorites(){ localStorage.setItem("favorites", JSON.stringify([...state.favorites])); }
+  // Helpers
+  function saveFavorites() {
+    localStorage.setItem(LS_KEY, JSON.stringify([...state.favorites]));
+  }
   
-  function genreLabel(key){ return { fantasy:"Фантастика", nonfiction:"Нон-фікшн", classic:"Класика" }[key] || key; }
+  function genreLabel(key) {
+    return { fantasy: "Fantasy", nonfiction: "Nonfiction", classic: "Classics" }[key] || key;
+  }
   
-  function renderCard(b){
+  // Render one card
+  function renderCard(b) {
     const isFav = state.favorites.has(b.id);
     const src = svgCover(b.title, b.author);
-    const alt = `Обкладинка книги ${b.title} — ${b.author}`;
+    const alt = `Book cover of ${b.title} — ${b.author}`;
+  
     return `
     <article class="card" aria-labelledby="title-${b.id}">
-      <div class="card__media"><img src="${src}" alt="${alt}" loading="lazy" width="400" height="600"></div>
+      <div class="card__media">
+        <img src="${src}" alt="${alt}" loading="lazy" width="400" height="600">
+      </div>
       <div class="card__body">
         <h3 id="title-${b.id}" class="card__title">${b.title}</h3>
         <p class="card__meta">${b.author} • <span class="badge">${genreLabel(b.genre)}</span></p>
         <div class="card__row">
-          <span class="price">${b.price} грн</span>
-          <div class="card__row" role="group" aria-label="Дії">
-            <button class="btn btn--primary" data-action="toggle-fav" data-id="${b.id}" aria-pressed="${isFav}">
-              ${isFav ? "В обраному" : "Додати в обране"}
+          <span class="price">${b.price} UAH</span>
+          <div class="card__row" role="group" aria-label="Actions">
+            <button type="button" class="btn btn--primary" data-action="toggle-fav" data-id="${b.id}" aria-pressed="${isFav}">
+              ${isFav ? "In favorites" : "Add to favorites"}
             </button>
-            <button class="btn btn--ghost">Детальніше</button>
+            <button type="button" class="btn btn--ghost">Details</button>
           </div>
         </div>
       </div>
     </article>`;
   }
   
-  function render(){
-    let items = BOOKS.filter(b=>{
+  // Main render
+  function render() {
+    let items = BOOKS.filter(b => {
       const q = state.query.trim();
       const matchesQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q);
       const matchesG = state.genre === "all" || b.genre === state.genre;
       return matchesQ && matchesG;
     });
   
-    if (state.sort === "asc") items.sort((a,b)=>a.price-b.price);
-    if (state.sort === "desc") items.sort((a,b)=>b.price-a.price);
+    if (state.sort === "asc") items.sort((a, b) => a.price - b.price);
+    if (state.sort === "desc") items.sort((a, b) => b.price - a.price);
   
     els.catalog.innerHTML = items.map(renderCard).join("");
     els.empty.hidden = items.length > 0;
     els.favCount.textContent = state.favorites.size;
   
-    els.catalog.querySelectorAll("[data-action='toggle-fav']").forEach(btn=>{
-      btn.addEventListener("click", ()=>{
+    els.catalog.querySelectorAll("[data-action='toggle-fav']").forEach(btn => {
+      btn.addEventListener("click", () => {
         const id = Number(btn.dataset.id);
-        state.favorites.has(id) ? state.favorites.delete(id) : state.favorites.add(id);
+        if (state.favorites.has(id)) state.favorites.delete(id);
+        else state.favorites.add(id);
         saveFavorites();
+        btn.setAttribute("aria-pressed", state.favorites.has(id) ? "true" : "false");
         render();
       });
     });
   }
   
- 
-  els.q.addEventListener("input", e=>{ state.query = e.target.value.toLowerCase(); render(); });
-  els.chips.forEach(chip=>{
-    chip.addEventListener("click", ()=>{
-      els.chips.forEach(c=>{ c.classList.toggle("is-active", c===chip); c.setAttribute("aria-selected", c===chip); });
-      state.genre = chip.dataset.genre; render();
+  // Events
+  els.q.addEventListener("input", e => {
+    state.query = e.target.value.toLowerCase();
+    render();
+  });
+  
+  els.chips.forEach(chip => {
+    chip.addEventListener("click", () => {
+      els.chips.forEach(c => {
+        c.classList.toggle("is-active", c === chip);
+        c.setAttribute("aria-selected", c === chip ? "true" : "false");
+      });
+      state.genre = chip.dataset.genre;
+      render();
     });
   });
-  els.sort.addEventListener("change", e=>{ state.sort = e.target.value; render(); });
   
+  els.sort.addEventListener("change", e => {
+    state.sort = e.target.value;
+    render();
+  });
+  
+  // Initial paint
   render();
   
