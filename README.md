@@ -1,6 +1,6 @@
 
 
-## 🧩 Project Overview
+
 This project demonstrates how to design and implement a simple **RESTful API** and a connected **frontend** web page.
 
 It consists of:
