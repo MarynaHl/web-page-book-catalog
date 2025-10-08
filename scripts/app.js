@@ -31,7 +31,7 @@ const BOOKS = [
   function svgCover(title, author) {
     const palette = ["#1f4b99", "#0a6e6e", "#7a3c9a", "#9a342e", "#2e7d32", "#6b4f1d"];
     const bg = palette[(title.length + author.length) % palette.length];
-    const initials = title.split(/\s+/).map(w => w[0]).slice(0, 3).join("").toUpperCase();
+  
     const svg =
   `<svg xmlns='http://www.w3.org/2000/svg' width='400' height='600'>
     <defs>
@@ -41,11 +41,11 @@ const BOOKS = [
       </linearGradient>
     </defs>
     <rect width='100%' height='100%' fill='url(#g)'/>
-    <text x='50%' y='55%' text-anchor='middle' font-family='system-ui,Arial' font-size='96' fill='white' font-weight='700'>${initials}</text>
-    <text x='50%' y='85%' text-anchor='middle' font-family='system-ui,Arial' font-size='22' fill='#e6edf3'>${author.replace(/&/g,"&amp;")}</text>
   </svg>`;
+  
     return `data:image/svg+xml;utf8,${encodeURIComponent(svg)}`;
   }
+  
   
   // Helpers
   function saveFavorites() {
@@ -86,7 +86,7 @@ const BOOKS = [
   // Main render
   function render() {
     let items = BOOKS.filter(b => {
-      const q = state.query.trim();
+      const q = state.query.trim().toLowerCase();
       const matchesQ = !q || b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q);
       const matchesG = state.genre === "all" || b.genre === state.genre;
       return matchesQ && matchesG;
@@ -113,7 +113,7 @@ const BOOKS = [
   
   // Events
   els.q.addEventListener("input", e => {
-    state.query = e.target.value.toLowerCase();
+    state.query = e.target.value;
     render();
   });
   
